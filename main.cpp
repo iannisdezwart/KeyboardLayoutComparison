@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 
 #include "keyboard.hpp"
-#include "simulation.hpp"
+#include "keyboard-layouts.hpp"
 
 int main()
 {
@@ -14,11 +14,22 @@ int main()
 		text += c;
 	}
 
-	size_t qwerty_strain = simulation::simulate(keyboard::qwerty_layout, text);
-	size_t workman_strain = simulation::simulate(keyboard::workman_layout, text);
-	size_t dvorak_strain = simulation::simulate(keyboard::dvorak_layout, text);
+	std::cout << "===== Qwerty ======" << std::endl;
+	keyboard::QwertyKeyboard().type(text).print_analytics();
+	std::cout << "===================" << std::endl;
+	std::cout << std::endl;
 
-	std::cout << "qwerty: " << qwerty_strain << std::endl;
-	std::cout << "workman: " << workman_strain << std::endl;
-	std::cout << "dvorak: " << dvorak_strain << std::endl;
+	std::cout << "===== Workman =====" << std::endl;
+	keyboard::WorkmanKeyboard().type(text).print_analytics();
+	std::cout << "===================" << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "=== Workman Plus ==" << std::endl;
+	keyboard::WorkmanPlusKeyboard().type(text).print_analytics();
+	std::cout << "===================" << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "===== Dvorak ======" << std::endl;
+	keyboard::DvorakKeyboard().type(text).print_analytics();
+	std::cout << "===================" << std::endl;
 }
