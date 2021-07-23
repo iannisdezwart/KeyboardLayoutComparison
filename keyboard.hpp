@@ -12,8 +12,8 @@ namespace keyboard
 	{
 		enum Value : uint8_t
 		{
-			ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, ZERO,      DASH,
-			Q,   W,   E,     R,    T,    Y,    U,    I,     O,    P,         LEFT_BRACKET,
+			ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, ZERO,      DASH,         EQUALS,
+			Q,   W,   E,     R,    T,    Y,    U,    I,     O,    P,         LEFT_BRACKET, RIGHT_BRACKET, BACKSLASH,
 			A,   S,   D,     F,    G,    H,    J,    K,     L,    SEMICOLON, QUOTE,
 			Z,   X,   C,     V,    B,    N,    M,    COMMA, DOT,  SLASH,
 														SPACE,
@@ -39,6 +39,9 @@ namespace keyboard
 		{
 			switch (c)
 			{
+				default:
+					throw "Unknown character";
+
 				case '1':
 				case '!':
 					return Key::ONE;
@@ -266,6 +269,9 @@ namespace keyboard
 		{
 			switch (finger)
 			{
+				default:
+					throw "Unknown finger";
+
 				case Finger::LEFT_PINKY:
 				case Finger::LEFT_RING:
 				case Finger::LEFT_MIDDLE:
@@ -290,6 +296,9 @@ namespace keyboard
 		{
 			switch (key)
 			{
+				default:
+					throw "Unknown key";
+
 				case Key::ONE: return 10;
 				case Key::TWO: return 6;
 				case Key::THREE: return 6;
@@ -301,6 +310,7 @@ namespace keyboard
 				case Key::NINE: return 6;
 				case Key::ZERO: return 10;
 				case Key::DASH: return 10;
+				case Key::EQUALS: return 12;
 				case Key::Q: return 8;
 				case Key::W: return 4;
 				case Key::E: return 4;
@@ -312,6 +322,8 @@ namespace keyboard
 				case Key::O: return 4;
 				case Key::P: return 8;
 				case Key::LEFT_BRACKET: return 8;
+				case Key::RIGHT_BRACKET: return 10;
+				case Key::BACKSLASH: return 12;
 				case Key::A: return 3;
 				case Key::S: return 2;
 				case Key::D: return 2;
@@ -347,6 +359,9 @@ namespace keyboard
 		{
 			switch (key)
 			{
+				default:
+					throw "Unknown key";
+
 				case Key::ONE: return Button(key, Finger::LEFT_PINKY, Row::NUMBER_ROW);
 				case Key::TWO: return Button(key, Finger::LEFT_RING, Row::NUMBER_ROW);
 				case Key::THREE: return Button(key, Finger::LEFT_MIDDLE, Row::NUMBER_ROW);
@@ -358,6 +373,7 @@ namespace keyboard
 				case Key::NINE: return Button(key, Finger::RIGHT_RING, Row::NUMBER_ROW);
 				case Key::ZERO: return Button(key, Finger::RIGHT_RING, Row::NUMBER_ROW);
 				case Key::DASH: return Button(key, Finger::RIGHT_PINKY, Row::NUMBER_ROW);
+				case Key::EQUALS: return Button(key, Finger::RIGHT_PINKY, Row::NUMBER_ROW);
 
 				case Key::Q: return Button(key, Finger::LEFT_PINKY, Row::TOP_ROW);
 				case Key::W: return Button(key, Finger::LEFT_RING, Row::TOP_ROW);
@@ -370,6 +386,8 @@ namespace keyboard
 				case Key::O: return Button(key, Finger::RIGHT_RING, Row::TOP_ROW);
 				case Key::P: return Button(key, Finger::RIGHT_PINKY, Row::TOP_ROW);
 				case Key::LEFT_BRACKET: return Button(key, Finger::RIGHT_PINKY, Row::TOP_ROW);
+				case Key::RIGHT_BRACKET: return Button(key, Finger::RIGHT_PINKY, Row::TOP_ROW);
+				case Key::BACKSLASH: return Button(key, Finger::RIGHT_PINKY, Row::TOP_ROW);
 
 				case Key::A: return Button(key, Finger::LEFT_PINKY, Row::HOME_ROW);
 				case Key::S: return Button(key, Finger::LEFT_RING, Row::HOME_ROW);
@@ -598,7 +616,10 @@ namespace keyboard
 					case '(':
 					case ')':
 					case '_':
+					case '+':
 					case '{':
+					case '}':
+					case '|':
 					case ':':
 					case '"':
 					case '<':
@@ -607,7 +628,10 @@ namespace keyboard
 						return press_shift(c);
 
 					case '-':
+					case '=':
 					case '[':
+					case ']':
+					case '\\':
 					case ';':
 					case '\'':
 					case ',':
@@ -627,9 +651,35 @@ namespace keyboard
 			 */
 			Keyboard& type(const std::string& text)
 			{
-				for (char c : text)
+				for (size_t i = 0; i < text.size(); i++)
 				{
-					strain += press_by_char(c);
+					// Unicode characters outside of the ASCII range
+
+					if ((text[i] & 0b11110000) == 0b11110000 && !(text[i] & 0b00001000))
+					{
+						std::cerr << "Skipped unknown character '" << text.substr(i, 4)
+							<< "' at index " << i << std::endl;
+						i += 3;
+						continue;
+					}
+
+					if ((text[i] & 0b11100000) == 0b11100000 && !(text[i] & 0b00010000))
+					{
+						std::cerr << "Skipped unknown character '" << text.substr(i, 3)
+							<< "' at index " << i << std::endl;
+						i += 2;
+						continue;
+					}
+
+					if ((text[i] & 0b11000000) == 0b11000000 && !(text[i] & 0b00100000))
+					{
+						std::cerr << "Skipped unknown character '" << text.substr(i, 2)
+							<< "' at index " << i << std::endl;
+						i += 1;
+						continue;
+					}
+
+					strain += press_by_char(text[i]);
 				}
 
 				return *this;
@@ -656,8 +706,8 @@ namespace keyboard
 					<< right_pinky_finger_ratio() * 100 << "% "
 					<< std::endl;
 				std::cout << "Hand distrubution: "
-					<< left_hand_ratio() * 100 << "%" << " / "
-					<< right_hand_ratio() * 100 << "%" << std::endl;
+					<< left_hand_ratio() * 100 << "% (L)" << " / "
+					<< right_hand_ratio() * 100 << "% (R)" << std::endl;
 			}
 	};
 };
