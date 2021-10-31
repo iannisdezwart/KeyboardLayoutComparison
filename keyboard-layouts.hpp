@@ -7,257 +7,149 @@
 
 namespace keyboard
 {
-	struct QwertyKeyboard : public Keyboard
+	/**
+	 * @brief Reads a keyboard layout from a file.
+	 * Format: 4 lines of keys, each line is a row of the keyboard.
+	 * @param filename The name of the file to read.
+	 */
+	Keyboard read_layout(const std::string& filename)
 	{
-		Button map(Key key)
+		std::ifstream file(filename);
+		if (!file.is_open())
 		{
-			switch (key)
-			{
-				default:
-					throw "Unknown key";
-
-				case Key::ONE: return Button::from_key(Key::ONE);
-				case Key::TWO: return Button::from_key(Key::TWO);
-				case Key::THREE: return Button::from_key(Key::THREE);
-				case Key::FOUR: return Button::from_key(Key::FOUR);
-				case Key::FIVE: return Button::from_key(Key::FIVE);
-				case Key::SIX: return Button::from_key(Key::SIX);
-				case Key::SEVEN: return Button::from_key(Key::SEVEN);
-				case Key::EIGHT: return Button::from_key(Key::EIGHT);
-				case Key::NINE: return Button::from_key(Key::NINE);
-				case Key::ZERO: return Button::from_key(Key::ZERO);
-				case Key::DASH: return Button::from_key(Key::DASH);
-				case Key::EQUALS: return Button::from_key(Key::EQUALS);
-				case Key::Q: return Button::from_key(Key::Q);
-				case Key::W: return Button::from_key(Key::W);
-				case Key::E: return Button::from_key(Key::E);
-				case Key::R: return Button::from_key(Key::R);
-				case Key::T: return Button::from_key(Key::T);
-				case Key::Y: return Button::from_key(Key::Y);
-				case Key::U: return Button::from_key(Key::U);
-				case Key::I: return Button::from_key(Key::I);
-				case Key::O: return Button::from_key(Key::O);
-				case Key::P: return Button::from_key(Key::P);
-				case Key::LEFT_BRACKET: return Button::from_key(Key::LEFT_BRACKET);
-				case Key::RIGHT_BRACKET: return Button::from_key(Key::RIGHT_BRACKET);
-				case Key::BACKSLASH: return Button::from_key(Key::BACKSLASH);
-				case Key::A: return Button::from_key(Key::A);
-				case Key::S: return Button::from_key(Key::S);
-				case Key::D: return Button::from_key(Key::D);
-				case Key::F: return Button::from_key(Key::F);
-				case Key::G: return Button::from_key(Key::G);
-				case Key::H: return Button::from_key(Key::H);
-				case Key::J: return Button::from_key(Key::J);
-				case Key::K: return Button::from_key(Key::K);
-				case Key::L: return Button::from_key(Key::L);
-				case Key::SEMICOLON: return Button::from_key(Key::SEMICOLON);
-				case Key::QUOTE: return Button::from_key(Key::QUOTE);
-				case Key::Z: return Button::from_key(Key::Z);
-				case Key::X: return Button::from_key(Key::X);
-				case Key::C: return Button::from_key(Key::C);
-				case Key::V: return Button::from_key(Key::V);
-				case Key::B: return Button::from_key(Key::B);
-				case Key::N: return Button::from_key(Key::N);
-				case Key::M: return Button::from_key(Key::M);
-				case Key::COMMA: return Button::from_key(Key::COMMA);
-				case Key::DOT: return Button::from_key(Key::DOT);
-				case Key::SLASH: return Button::from_key(Key::SLASH);
-				case Key::SPACE: return Button::from_key(Key::SPACE);
-				case Key::LEFT_SHIFT: return Button::from_key(Key::LEFT_SHIFT);
-				case Key::RIGHT_SHIFT: return Button::from_key(Key::RIGHT_SHIFT);
-				case Key::ENTER: return Button::from_key(Key::ENTER);
-			}
+			std::cerr << "Could not open file " << filename << std::endl;
+			exit(1);
 		}
-	};
 
-	struct WorkmanKeyboard : public Keyboard
-	{
-		Button map(Key key)
+		Keyboard layout;
+
+		// Get the name of the layout.
+		// The name is the name of the file without the extension
+		// and the path.
+
+		std::string name = filename;
+
+		size_t last_dot = name.find_last_of('.');
+
+		if (last_dot != std::string::npos)
 		{
-			switch (key)
-			{
-				default:
-					throw "Unknown key";
-
-				case Key::ONE: return Button::from_key(Key::ONE);
-				case Key::TWO: return Button::from_key(Key::TWO);
-				case Key::THREE: return Button::from_key(Key::THREE);
-				case Key::FOUR: return Button::from_key(Key::FOUR);
-				case Key::FIVE: return Button::from_key(Key::FIVE);
-				case Key::SIX: return Button::from_key(Key::SIX);
-				case Key::SEVEN: return Button::from_key(Key::SEVEN);
-				case Key::EIGHT: return Button::from_key(Key::EIGHT);
-				case Key::NINE: return Button::from_key(Key::NINE);
-				case Key::ZERO: return Button::from_key(Key::ZERO);
-				case Key::DASH: return Button::from_key(Key::DASH);
-				case Key::EQUALS: return Button::from_key(Key::EQUALS);
-				case Key::Q: return Button::from_key(Key::Q);
-				case Key::W: return Button::from_key(Key::R);
-				case Key::E: return Button::from_key(Key::K);
-				case Key::R: return Button::from_key(Key::E);
-				case Key::T: return Button::from_key(Key::F);
-				case Key::Y: return Button::from_key(Key::H);
-				case Key::U: return Button::from_key(Key::I);
-				case Key::I: return Button::from_key(Key::SEMICOLON);
-				case Key::O: return Button::from_key(Key::L);
-				case Key::P: return Button::from_key(Key::O);
-				case Key::LEFT_BRACKET: return Button::from_key(Key::LEFT_BRACKET);
-				case Key::RIGHT_BRACKET: return Button::from_key(Key::RIGHT_BRACKET);
-				case Key::BACKSLASH: return Button::from_key(Key::BACKSLASH);
-				case Key::A: return Button::from_key(Key::A);
-				case Key::S: return Button::from_key(Key::S);
-				case Key::D: return Button::from_key(Key::W);
-				case Key::F: return Button::from_key(Key::U);
-				case Key::G: return Button::from_key(Key::G);
-				case Key::H: return Button::from_key(Key::D);
-				case Key::J: return Button::from_key(Key::Y);
-				case Key::K: return Button::from_key(Key::N);
-				case Key::L: return Button::from_key(Key::M);
-				case Key::SEMICOLON: return Button::from_key(Key::P);
-				case Key::QUOTE: return Button::from_key(Key::QUOTE);
-				case Key::Z: return Button::from_key(Key::Z);
-				case Key::X: return Button::from_key(Key::X);
-				case Key::C: return Button::from_key(Key::V);
-				case Key::V: return Button::from_key(Key::B);
-				case Key::B: return Button::from_key(Key::T);
-				case Key::N: return Button::from_key(Key::J);
-				case Key::M: return Button::from_key(Key::C);
-				case Key::COMMA: return Button::from_key(Key::COMMA);
-				case Key::DOT: return Button::from_key(Key::DOT);
-				case Key::SLASH: return Button::from_key(Key::SLASH);
-				case Key::SPACE: return Button::from_key(Key::SPACE);
-				case Key::LEFT_SHIFT: return Button::from_key(Key::LEFT_SHIFT);
-				case Key::RIGHT_SHIFT: return Button::from_key(Key::RIGHT_SHIFT);
-				case Key::ENTER: return Button::from_key(Key::ENTER);
-			}
+			name = name.substr(0, last_dot);
 		}
-	};
 
-	struct WorkmanPlusKeyboard : public Keyboard
-	{
-		Button map(Key key)
+		size_t last_slash = name.find_last_of('/');
+
+		if (last_slash != std::string::npos)
 		{
-			switch (key)
-			{
-				default:
-					throw "Unknown key";
-
-				case Key::ONE: return Button::from_key(Key::ONE);
-				case Key::TWO: return Button::from_key(Key::TWO);
-				case Key::THREE: return Button::from_key(Key::THREE);
-				case Key::FOUR: return Button::from_key(Key::FOUR);
-				case Key::FIVE: return Button::from_key(Key::FIVE);
-				case Key::SIX: return Button::from_key(Key::SIX);
-				case Key::SEVEN: return Button::from_key(Key::SEVEN);
-				case Key::EIGHT: return Button::from_key(Key::EIGHT);
-				case Key::NINE: return Button::from_key(Key::NINE);
-				case Key::ZERO: return Button::from_key(Key::ZERO);
-				case Key::DASH: return Button::from_key(Key::DASH);
-				case Key::EQUALS: return Button::from_key(Key::EQUALS);
-				case Key::Q: return Button::from_key(Key::Q);
-				case Key::W: return Button::from_key(Key::R);
-				case Key::E: return Button::from_key(Key::K);
-				case Key::R: return Button::from_key(Key::E);
-				case Key::T: return Button::from_key(Key::F);
-				case Key::Y: return Button::from_key(Key::H);
-				case Key::U: return Button::from_key(Key::I);
-				case Key::I: return Button::from_key(Key::SEMICOLON);
-				case Key::O: return Button::from_key(Key::L);
-				case Key::P: return Button::from_key(Key::O);
-				case Key::LEFT_BRACKET: return Button::from_key(Key::LEFT_BRACKET);
-				case Key::RIGHT_BRACKET: return Button::from_key(Key::RIGHT_BRACKET);
-				case Key::BACKSLASH: return Button::from_key(Key::BACKSLASH);
-				case Key::A: return Button::from_key(Key::S);
-				case Key::S: return Button::from_key(Key::A);
-				case Key::D: return Button::from_key(Key::W);
-				case Key::F: return Button::from_key(Key::U);
-				case Key::G: return Button::from_key(Key::G);
-				case Key::H: return Button::from_key(Key::D);
-				case Key::J: return Button::from_key(Key::Y);
-				case Key::K: return Button::from_key(Key::N);
-				case Key::L: return Button::from_key(Key::M);
-				case Key::SEMICOLON: return Button::from_key(Key::P);
-				case Key::QUOTE: return Button::from_key(Key::QUOTE);
-				case Key::Z: return Button::from_key(Key::Z);
-				case Key::X: return Button::from_key(Key::X);
-				case Key::C: return Button::from_key(Key::V);
-				case Key::V: return Button::from_key(Key::B);
-				case Key::B: return Button::from_key(Key::T);
-				case Key::N: return Button::from_key(Key::J);
-				case Key::M: return Button::from_key(Key::C);
-				case Key::COMMA: return Button::from_key(Key::COMMA);
-				case Key::DOT: return Button::from_key(Key::DOT);
-				case Key::SLASH: return Button::from_key(Key::SLASH);
-				case Key::SPACE: return Button::from_key(Key::SPACE);
-				case Key::LEFT_SHIFT: return Button::from_key(Key::LEFT_SHIFT);
-				case Key::RIGHT_SHIFT: return Button::from_key(Key::RIGHT_SHIFT);
-				case Key::ENTER: return Button::from_key(Key::ENTER);
-			}
+			name = name.substr(last_slash + 1);
 		}
-	};
 
-	struct DvorakKeyboard : public Keyboard
-	{
-		Button map(Key key)
-		{
-			switch (key)
-			{
-				default:
-					throw "Unknown key";
+		layout.name = name;
 
-				case Key::ONE: return Button::from_key(Key::ONE);
-				case Key::TWO: return Button::from_key(Key::TWO);
-				case Key::THREE: return Button::from_key(Key::THREE);
-				case Key::FOUR: return Button::from_key(Key::FOUR);
-				case Key::FIVE: return Button::from_key(Key::FIVE);
-				case Key::SIX: return Button::from_key(Key::SIX);
-				case Key::SEVEN: return Button::from_key(Key::SEVEN);
-				case Key::EIGHT: return Button::from_key(Key::EIGHT);
-				case Key::NINE: return Button::from_key(Key::NINE);
-				case Key::ZERO: return Button::from_key(Key::ZERO);
-				case Key::DASH: return Button::from_key(Key::DASH);
-				case Key::EQUALS: return Button::from_key(Key::RIGHT_BRACKET);
-				case Key::Q: return Button::from_key(Key::X);
-				case Key::W: return Button::from_key(Key::COMMA);
-				case Key::E: return Button::from_key(Key::D);
-				case Key::R: return Button::from_key(Key::O);
-				case Key::T: return Button::from_key(Key::K);
-				case Key::Y: return Button::from_key(Key::T);
-				case Key::U: return Button::from_key(Key::F);
-				case Key::I: return Button::from_key(Key::G);
-				case Key::O: return Button::from_key(Key::S);
-				case Key::P: return Button::from_key(Key::R);
-				case Key::LEFT_BRACKET: return Button::from_key(Key::DASH);
-				case Key::RIGHT_BRACKET: return Button::from_key(Key::EQUALS);
-				case Key::BACKSLASH: return Button::from_key(Key::BACKSLASH);
-				case Key::A: return Button::from_key(Key::A);
-				case Key::S: return Button::from_key(Key::SEMICOLON);
-				case Key::D: return Button::from_key(Key::H);
-				case Key::F: return Button::from_key(Key::Y);
-				case Key::G: return Button::from_key(Key::U);
-				case Key::H: return Button::from_key(Key::J);
-				case Key::J: return Button::from_key(Key::C);
-				case Key::K: return Button::from_key(Key::V);
-				case Key::L: return Button::from_key(Key::O);
-				case Key::SEMICOLON: return Button::from_key(Key::Z);
-				case Key::QUOTE: return Button::from_key(Key::DASH);
-				case Key::Z: return Button::from_key(Key::SLASH);
-				case Key::X: return Button::from_key(Key::B);
-				case Key::C: return Button::from_key(Key::I);
-				case Key::V: return Button::from_key(Key::DOT);
-				case Key::B: return Button::from_key(Key::B);
-				case Key::N: return Button::from_key(Key::K);
-				case Key::M: return Button::from_key(Key::M);
-				case Key::COMMA: return Button::from_key(Key::W);
-				case Key::DOT: return Button::from_key(Key::E);
-				case Key::SLASH: return Button::from_key(Key::LEFT_BRACKET);
-				case Key::SPACE: return Button::from_key(Key::SPACE);
-				case Key::LEFT_SHIFT: return Button::from_key(Key::LEFT_SHIFT);
-				case Key::RIGHT_SHIFT: return Button::from_key(Key::RIGHT_SHIFT);
-				case Key::ENTER: return Button::from_key(Key::ENTER);
-			}
-		}
-	};
+		char c;
+
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::ONE);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::TWO);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::THREE);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::FOUR);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::FIVE);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::SIX);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::SEVEN);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::EIGHT);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::NINE);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::ZERO);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::DASH);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::EQUALS);
+
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::Q);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::W);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::E);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::R);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::T);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::Y);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::U);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::I);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::O);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::P);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::LEFT_BRACKET);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::RIGHT_BRACKET);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::BACKSLASH);
+
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::A);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::S);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::D);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::F);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::G);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::H);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::J);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::K);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::L);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::SEMICOLON);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::QUOTE);
+
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::Z);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::X);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::C);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::V);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::B);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::N);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::M);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::COMMA);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::DOT);
+		file >> c;
+		layout.map[Key::from_char(c)] = Button::from_key(Key::SLASH);
+
+		layout.map[Key::SPACE] = Button::from_key(Key::SPACE);
+		layout.map[Key::ENTER] = Button::from_key(Key::ENTER);
+		layout.map[Key::LEFT_SHIFT] = Button::from_key(Key::LEFT_SHIFT);
+		layout.map[Key::RIGHT_SHIFT] = Button::from_key(Key::RIGHT_SHIFT);
+
+		return layout;
+	}
 }
 
 #endif

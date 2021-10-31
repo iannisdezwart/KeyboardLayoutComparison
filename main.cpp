@@ -3,9 +3,32 @@
 #include "keyboard.hpp"
 #include "keyboard-layouts.hpp"
 
+/**
+ * @brief Loads all keyboard layouts from the given directory.
+ * Keyboard layouts end with the `.keymap` extension.
+ * @param directory Directory to load keyboard layouts from.
+ * @returns Vector of loaded keyboard layouts.
+ */
+std::vector<keyboard::Keyboard> load_layouts(std::string directory)
+{
+	std::vector<keyboard::Keyboard> keyboards;
+
+	for (auto& entry : std::filesystem::directory_iterator(directory))
+	{
+		if (entry.path().extension() == ".keymap")
+		{
+			keyboards.push_back(keyboard::read_layout(
+				entry.path().string()));
+		}
+	}
+
+	return keyboards;
+}
+
 int main()
 {
-	// std::string text = "the quick brown fox jumps over the lazy dog";
+	// Read the text to type from stdin.
+
 	std::string text;
 	int c;
 
@@ -14,22 +37,14 @@ int main()
 		text += c;
 	}
 
-	std::cout << "===== Qwerty ======" << std::endl;
-	keyboard::QwertyKeyboard().type(text).print_analytics();
-	std::cout << "===================" << std::endl;
-	std::cout << std::endl;
+	// Type the text on all keyboards and print analytics.
 
-	std::cout << "===== Workman =====" << std::endl;
-	keyboard::WorkmanKeyboard().type(text).print_analytics();
-	std::cout << "===================" << std::endl;
-	std::cout << std::endl;
+	for (auto& keyboard : load_layouts("layouts"))
+	{
+		keyboard.type(text);
 
-	std::cout << "=== Workman Plus ==" << std::endl;
-	keyboard::WorkmanPlusKeyboard().type(text).print_analytics();
-	std::cout << "===================" << std::endl;
-	std::cout << std::endl;
-
-	std::cout << "===== Dvorak ======" << std::endl;
-	keyboard::DvorakKeyboard().type(text).print_analytics();
-	std::cout << "===================" << std::endl;
+		std::cout << "Keyboard: " << keyboard.name << std::endl;
+		keyboard.print_analytics();
+		std::cout << std::endl;
+	}
 }

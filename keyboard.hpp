@@ -16,11 +16,13 @@ namespace keyboard
 			Q,   W,   E,     R,    T,    Y,    U,    I,     O,    P,         LEFT_BRACKET, RIGHT_BRACKET, BACKSLASH,
 			A,   S,   D,     F,    G,    H,    J,    K,     L,    SEMICOLON, QUOTE,
 			Z,   X,   C,     V,    B,    N,    M,    COMMA, DOT,  SLASH,
-														SPACE,
+			                     SPACE,
 			LEFT_SHIFT, RIGHT_SHIFT, ENTER
 		};
 
 		Value value;
+
+		Key() {}
 
 		Key(Value value) : value(value) {}
 
@@ -86,6 +88,10 @@ namespace keyboard
 				case '_':
 					return Key::DASH;
 
+				case '=':
+				case '+':
+					return Key::EQUALS;
+
 				case 'Q':
 				case 'q':
 					return Key::Q;
@@ -129,6 +135,14 @@ namespace keyboard
 				case '[':
 				case '{':
 					return Key::LEFT_BRACKET;
+
+				case ']':
+				case '}':
+					return Key::RIGHT_BRACKET;
+
+				case '\\':
+				case '|':
+					return Key::BACKSLASH;
 
 				case 'A':
 				case 'a':
@@ -225,7 +239,10 @@ namespace keyboard
 
 	enum class Hand : uint8_t
 	{
-		LEFT, RIGHT, THUMBS
+		LEFT,
+		RIGHT,
+		THUMBS,
+		UNKNOWN
 	};
 
 	enum class Finger : uint8_t
@@ -238,7 +255,8 @@ namespace keyboard
 		RIGHT_INDEX,
 		RIGHT_MIDDLE,
 		RIGHT_RING,
-		RIGHT_PINKY
+		RIGHT_PINKY,
+		UNKNOWN
 	};
 
 	enum class Row : uint8_t
@@ -258,6 +276,8 @@ namespace keyboard
 		Key key;
 		Finger finger;
 		Row row;
+
+		Button() {}
 
 		Button(Key key, Finger finger, Row row)
 			: key(key), finger(finger), row(row) {}
@@ -423,6 +443,10 @@ namespace keyboard
 	class Keyboard
 	{
 		public:
+			// The name of the keyboard
+
+			std::string name;
+
 			// Strain analytics
 
 			size_t strain = 0;
@@ -438,6 +462,16 @@ namespace keyboard
 			size_t right_middle_finger_hits = 0;
 			size_t right_ring_finger_hits = 0;
 			size_t right_pinky_finger_hits = 0;
+
+			Finger prev_finger = Finger::UNKNOWN;
+			size_t same_finger_usage = 0;
+
+			Hand prev_hand = Hand::UNKNOWN;
+			size_t same_hand_usage = 0;
+
+			// Keyboard map
+
+			std::map<Key, Button> map;
 
 			size_t total_hits()
 			{
@@ -493,6 +527,11 @@ namespace keyboard
 				return (float) right_pinky_finger_hits / (float) total_hits();
 			}
 
+			float same_finger_ratio()
+			{
+				return (float) same_finger_usage / (float) total_hits();
+			}
+
 			// Hand analytics
 
 			size_t left_hand_hits()
@@ -517,6 +556,11 @@ namespace keyboard
 				return (float) right_hand_hits() / (float) total_hits();
 			}
 
+			float same_hand_ratio()
+			{
+				return (float) same_hand_usage / (float) total_hits();
+			}
+
 			// Row analytics
 
 			size_t number_row_hits = 0;
@@ -528,6 +572,8 @@ namespace keyboard
 		private:
 			size_t press(Button button)
 			{
+				size_t press_strain = 0;
+
 				switch (button.finger)
 				{
 					case Finger::LEFT_PINKY: left_pinky_finger_hits++; break;
@@ -541,6 +587,20 @@ namespace keyboard
 					case Finger::RIGHT_PINKY: right_pinky_finger_hits++; break;
 				}
 
+				if (button.finger == prev_finger)
+				{
+					same_finger_usage++;
+					press_strain += 1;
+				}
+
+				if (button.hand() == prev_hand)
+				{
+					same_hand_usage++;
+				}
+
+				prev_finger = button.finger;
+				prev_hand = button.hand();
+
 				switch (button.row)
 				{
 					case Row::NUMBER_ROW: number_row_hits++; break;
@@ -550,18 +610,20 @@ namespace keyboard
 					case Row::SPACEBAR_ROW: spacebar_row_hits++; break;
 				}
 
-				return button.strain();
+				press_strain += button.strain();
+
+				return press_strain;
 			}
 
 			size_t press_normal(char c)
 			{
-				Button button = map(Key::from_char(c));
+				Button button = map[Key::from_char(c)];
 				return press(button);
 			}
 
 			size_t press_shift(char c)
 			{
-				Button button = map(Key::from_char(c));
+				Button button = map[Key::from_char(c)];
 				Hand shift_hand = button.hand();
 
 				size_t key_strain = press(button);
@@ -580,12 +642,6 @@ namespace keyboard
 			}
 
 		public:
-			/**
-			 *  @brief Maps a key that needs to be pressed to the corresponding
-			 *  button on the keyboard.
-			 */
-			virtual Button map(Key key) = 0;
-
 			/**
 			 *  @brief Presses a button on the keyboard by its character code.
 			 *  Keypress analytics will be gathered.
@@ -705,12 +761,17 @@ namespace keyboard
 					<< right_ring_finger_ratio() * 100 << "% "
 					<< right_pinky_finger_ratio() * 100 << "% "
 					<< std::endl;
+				std::cout << "Same finger usage: "
+					<< same_finger_ratio() * 100 << "% "
+					<< std::endl;
+				std::cout << "Same hand usage: "
+					<< same_hand_ratio() * 100 << "% "
+					<< std::endl;
 				std::cout << "Hand distrubution: "
 					<< left_hand_ratio() * 100 << "% (L)" << " / "
 					<< right_hand_ratio() * 100 << "% (R)" << std::endl;
 			}
 	};
 };
-
 
 #endif
